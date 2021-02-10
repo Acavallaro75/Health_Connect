@@ -361,7 +361,7 @@ public final class DoctorView extends JFrame {
       preparedStatement.setString(2, username);
       resultSet = preparedStatement.executeQuery();
       if (resultSet.next()) {
-        // JOptionPane.showMessageDialog(null, "Username and Password is correct");
+        JOptionPane.showMessageDialog(null, "Username and Password is correct");
         element =
             resultSet.getString("RID")
                 + "        "
@@ -407,9 +407,10 @@ public final class DoctorView extends JFrame {
       } catch (SQLException e) {
         JOptionPane.showMessageDialog(null, e);
       }
-      RequestConversation r = new RequestConversation(requestID, username, userType);
+      RequestConversation requestConversation =
+          new RequestConversation(requestID, username, userType);
       dispose();
-      r.setVisible(true);
+      requestConversation.setVisible(true);
     } else JOptionPane.showMessageDialog(null, "Please select a request");
   }
 

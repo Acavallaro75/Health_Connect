@@ -266,8 +266,8 @@ public class NewJFrame extends JFrame {
       resultSet = preparedStatement.executeQuery();
       if (resultSet.next()) {
         JOptionPane.showMessageDialog(null, "Username and Password is correct");
-        DoctorView d = new DoctorView(username);
-        d.setVisible(true);
+        DoctorView doctorView = new DoctorView(username);
+        doctorView.setVisible(true);
         dispose();
       } else {
         JOptionPane.showMessageDialog(null, "Incorrect username or password.  Please try again.");

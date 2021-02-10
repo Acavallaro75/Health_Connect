@@ -14,7 +14,6 @@ import java.sql.*;
 import java.sql.ResultSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import static java.awt.Font.BOLD;
 import static java.awt.Font.ITALIC;
 

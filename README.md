@@ -9,6 +9,7 @@
  
  - Once the prerequisite installations have been met, use the steps below to begin setup:
 	 - [ ] Clone the project from GitHub in IntelliJ
+	 - [ ] Add the "sqlitejdbc.jar" file that is pinned in the Discord channel to the project's structure under dependencies
 
  - If the database does not pull when cloning the project:
 	 - [ ] Open the "Database" menu on the right side and select "Data Source Properties"

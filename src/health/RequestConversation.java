@@ -392,7 +392,7 @@ public class RequestConversation extends JFrame {
         | UnsupportedLookAndFeelException ex) {
       Logger.getLogger(RequestConversation.class.getName()).log(Level.SEVERE, null, ex);
     }
-    // </editor-fold>
+
     NewJFrame jFrame = new NewJFrame();
     final DoctorView doctorView = new DoctorView(jFrame.getUsername());
     /* Create and display the form */

@@ -18,3 +18,13 @@
 	 - [ ] Test the connection to verify connection
 	 - [ ] Add the "sqlitejdbc.jar" file that is pinned in the Discord channel to the project's structure under dependencies
 	 - [ ] Create the appropriate tables (picture in images folder)
+
+## Setting Up for Testing
+
+-Prerequisite Installations:
+	 - [ ] JUnit5
+	 - [ ] Jacoco
+
+- Once the prerequisite installations have been met, use the steps below to begin setup:
+	 - [ ] Create a pom.xml file
+	 - [ ] Right click on the file and choose generate dependency. This will download JUnit5.

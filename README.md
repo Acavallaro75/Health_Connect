@@ -22,7 +22,6 @@
 ## Setting Up for Testing
 
 - Prerequisite Installations:
-	 - [ ] JUnit5
 	 - [ ] Jacoco
 
 - Once the prerequisite installations have been met, use the steps below to begin setup:

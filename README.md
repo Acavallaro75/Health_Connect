@@ -21,7 +21,7 @@
 
 ## Setting Up for Testing
 
--Prerequisite Installations:
+- Prerequisite Installations:
 	 - [ ] JUnit5
 	 - [ ] Jacoco
 

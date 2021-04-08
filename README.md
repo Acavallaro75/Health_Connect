@@ -9,21 +9,10 @@
  
  - Once the prerequisite installations have been met, use the steps below to begin setup:
 	 - [ ] Clone the project from GitHub in IntelliJ
-	 - [ ] Add the "sqlitejdbc.jar" file that is pinned in the Discord channel to the project's structure under dependencies
 
- - If the database does not pull when cloning the project:
-	 - [ ] Open the "Database" menu on the right side and select "Data Source Properties"
-	 - [ ] Select "SQLite" from the list of options and download any missing drivers
-	 - [ ] Click the "+" in the top left corner and add a SQLite data source
-	 - [ ] Test the connection to verify connection
-	 - [ ] Add the "sqlitejdbc.jar" file that is pinned in the Discord channel to the project's structure under dependencies
-	 - [ ] Create the appropriate tables (picture in images folder)
+ - If the project does not function properly initially, open the pom.xml file and download any missing dependencies.
+ - If this does not work, open the Maven side menu on the right hand side and refresh Maven.
 
 ## Setting Up for Testing
 
-- Prerequisite Installations:
-	 - [ ] Jacoco
-
-- Once the prerequisite installations have been met, use the steps below to begin setup:
-	 - [ ] Create a pom.xml file
-	 - [ ] Right click on the file and choose generate dependency. This will download JUnit5.
+- The pom.xml file carries the Maven dependencies for JUnit 5 and SQLite. The above steps should allow for unit testing to begin immediately upon completing the above steps.

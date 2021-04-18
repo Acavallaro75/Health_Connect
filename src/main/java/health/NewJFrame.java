@@ -1,14 +1,9 @@
 package health;
 
-import java.awt.Toolkit;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import javax.swing.*;
 import java.sql.*;
-import java.sql.Statement;
-import java.sql.ResultSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static java.awt.Font.*;
@@ -22,7 +17,6 @@ public class NewJFrame extends JFrame {
   Connection connection = null;
   ResultSet resultSet = null;
   PreparedStatement preparedStatement = null;
-  int currentRow = 0;
   private String username;
 
   public NewJFrame() {
@@ -31,7 +25,7 @@ public class NewJFrame extends JFrame {
       Class.forName("org.sqlite.JDBC");
       connection = DriverManager.getConnection("jdbc:sqlite:Health_Connect_DB");
       JOptionPane.showMessageDialog(null, "Connected");
-      Statement statement = connection.createStatement();
+      connection.createStatement();
     } catch (ClassNotFoundException | SQLException e) {
       JOptionPane.showMessageDialog(null, e);
     }
@@ -44,7 +38,7 @@ public class NewJFrame extends JFrame {
     return this.username;
   }
 
-  public void setUsername(String username) {
+  public void setUsername() {
     this.username = this.txt_username.getText();
   }
 
@@ -222,9 +216,9 @@ public class NewJFrame extends JFrame {
     try {
       preparedStatement = connection.prepareStatement(sql);
       preparedStatement.setString(1, txt_username.getText());
-      preparedStatement.setString(2, txt_password.getText());
+      preparedStatement.setString(2, String.valueOf(txt_password.getPassword()));
       username = txt_username.getText();
-      setUsername(username);
+      setUsername();
       JOptionPane.showMessageDialog(null, "Username = " + username);
       resultSet = preparedStatement.executeQuery();
 
@@ -254,9 +248,9 @@ public class NewJFrame extends JFrame {
     try {
       preparedStatement = connection.prepareStatement(sql);
       preparedStatement.setString(1, txt_username.getText());
-      preparedStatement.setString(2, txt_password.getText());
+      preparedStatement.setString(2, String.valueOf(txt_password.getPassword()));
       username = txt_username.getText();
-      setUsername(username);
+      setUsername();
 
       resultSet = preparedStatement.executeQuery();
       if (resultSet.next()) {

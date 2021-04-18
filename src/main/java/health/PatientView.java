@@ -1,16 +1,11 @@
 package health;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.*;
 import static java.awt.Font.BOLD;
 import static java.awt.Font.ITALIC;
 
@@ -23,8 +18,6 @@ public final class PatientView extends JFrame {
   Connection connection = null;
   ResultSet resultSet = null;
   PreparedStatement preparedStatement = null;
-  int currentRow = 0;
-  int index;
   int requestID;
   String username;
   String userType;
@@ -36,7 +29,6 @@ public final class PatientView extends JFrame {
       Class.forName("org.sqlite.JDBC");
       connection = DriverManager.getConnection("jdbc:sqlite:Health_Connect_DB");
       JOptionPane.showMessageDialog(null, "Connected");
-      Statement statement = connection.createStatement();
     } catch (ClassNotFoundException | SQLException e) {
       JOptionPane.showMessageDialog(null, e);
     }
@@ -55,16 +47,8 @@ public final class PatientView extends JFrame {
     this.username = username;
   }
 
-  public int getRequestID() {
-    return this.requestID;
-  }
-
   public void setRequestID(int requestID) {
     this.requestID = requestID;
-  }
-
-  public String getUserType() {
-    return this.userType;
   }
 
   public void setUserType(String userType) {
@@ -79,7 +63,7 @@ public final class PatientView extends JFrame {
     JButton inProgressButton = new JButton();
     JButton closedButton = new JButton();
     JScrollPane jScrollPane1 = new JScrollPane();
-    jList1 = new JList();
+    jList1 = new JList<>();
     JScrollBar jScrollBar1 = new JScrollBar();
     jLabel1 = new JLabel();
     JButton openRequest = new JButton();
@@ -96,7 +80,7 @@ public final class PatientView extends JFrame {
     closedButton.addActionListener(this::closedButtonActionPerformed);
 
     jList1.setModel(
-        new AbstractListModel() {
+        new AbstractListModel<>() {
           final String[] strings = {"Item 1", "Item 2", "Item 3", "Item 4", "Item 5"};
 
           public int getSize() {

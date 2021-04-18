@@ -24,7 +24,6 @@ public final class DoctorView extends JFrame {
   Connection connection = null;
   ResultSet resultSet = null;
   PreparedStatement preparedStatement = null;
-  int currentRow = 0;
   int index;
   int requestID;
   String username;
@@ -37,7 +36,7 @@ public final class DoctorView extends JFrame {
       Class.forName("org.sqlite.JDBC");
       connection = DriverManager.getConnection("jdbc:sqlite:Health_Connect_DB");
       JOptionPane.showMessageDialog(null, "Connected");
-      Statement statement = connection.createStatement();
+      connection.createStatement();
     } catch (ClassNotFoundException | SQLException e) {
       JOptionPane.showMessageDialog(null, e);
     }
@@ -357,7 +356,7 @@ public final class DoctorView extends JFrame {
       if (resultSet.next()) {
         JOptionPane.showMessageDialog(null, "Username and Password is correct");
         element =
-            resultSet.getString("request.rid")
+            resultSet.getString("rid")
                 + "        "
                 + resultSet.getString("Date")
                 + "           "
@@ -365,7 +364,7 @@ public final class DoctorView extends JFrame {
         defaultListModel.addElement(element);
         while (resultSet.next()) {
           element =
-              resultSet.getString("request.rid")
+              resultSet.getString("rid")
                   + "        "
                   + resultSet.getString("Date")
                   + "           "

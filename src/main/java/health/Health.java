@@ -1,11 +1,10 @@
 package health;
 
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import javax.swing.JOptionPane;
-import java.sql.Statement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.Statement;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -13,34 +12,43 @@ import java.sql.SQLException;
  * and open the template in the editor.
  */
 public class Health {
-  public static void main(String[] args) {
-    // TODO code application logic here
+  public static void main(String[] args) throws Exception {
 
     Connection connection;
-    try {
-      Class.forName("org.sqlite.JDBC");
-      connection = DriverManager.getConnection("jdbc:sqlite:Health_Connect_DB");
-      JOptionPane.showMessageDialog(null, "Connected");
-      Statement statement = connection.createStatement();
-      ResultSet resultSet = statement.executeQuery("SELECT * FROM PATIENT");
+    Class.forName("org.sqlite.JDBC");
+    connection = DriverManager.getConnection("jdbc:sqlite:Health_Connect_DB");
+    JOptionPane.showMessageDialog(null, "Connected");
+    Statement statement = connection.createStatement();
+    ResultSet resultSet = statement.executeQuery("SELECT * FROM PATIENT");
 
+    if (resultSet.next()) {
+      System.out.println("Username = " + resultSet.getString("Username"));
+      System.out.println("Password = " + resultSet.getString("Password"));
       while (resultSet.next()) {
         System.out.println("Username = " + resultSet.getString("Username"));
         System.out.println("Password = " + resultSet.getString("Password"));
       }
-
-      resultSet = statement.executeQuery("SELECT * FROM Doctor");
-
-      while (resultSet.next()) {
-        System.out.println("Username = " + resultSet.getString("Username"));
-        System.out.println("Password = " + resultSet.getString("Password"));
-      }
-
-      // open login page
-      NewJFrame jFrame = new NewJFrame();
-      jFrame.setVisible(true);
-    } catch (ClassNotFoundException | SQLException e) {
-      JOptionPane.showMessageDialog(null, e);
+    } else {
+      JOptionPane.showMessageDialog(null, "No Patients Exist");
+      throw new Exception("No Patients Exist");
     }
+
+    resultSet = statement.executeQuery("SELECT * FROM Doctor");
+
+    if (resultSet.next()) {
+      System.out.println("Username = " + resultSet.getString("Username"));
+      System.out.println("Password = " + resultSet.getString("Password"));
+      while (resultSet.next()) {
+        System.out.println("Username = " + resultSet.getString("Username"));
+        System.out.println("Password = " + resultSet.getString("Password"));
+      }
+    } else {
+      JOptionPane.showMessageDialog(null, "No Doctors Exist");
+      throw new Exception("No Doctors Exist");
+    }
+
+    // open login page
+    NewJFrame jFrame = new NewJFrame();
+    jFrame.setVisible(true);
   }
 }

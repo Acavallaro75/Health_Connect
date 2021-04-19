@@ -3,6 +3,7 @@ package health;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static java.awt.Font.BOLD;
@@ -47,7 +48,14 @@ public class Profile extends JFrame {
     welcome.setText("Welcome Back!");
 
     makeRequestButton.setText("Make a Request");
-    makeRequestButton.addActionListener(this::makeRequestButtonActionPerformed);
+    makeRequestButton.addActionListener(
+        evt -> {
+          try {
+            makeRequestButtonActionPerformed();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        });
 
     viewRequestButton.setText("View Your Requests");
     viewRequestButton.addActionListener(this::viewRequestButtonActionPerformed);
@@ -148,7 +156,7 @@ public class Profile extends JFrame {
     pack();
   }
 
-  private void makeRequestButtonActionPerformed(ActionEvent evt) {
+  private void makeRequestButtonActionPerformed() throws SQLException, ClassNotFoundException {
     // TODO add your handling code here:
     dispose();
     NewRequests n = new NewRequests(username);

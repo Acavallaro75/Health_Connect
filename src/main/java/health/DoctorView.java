@@ -1,17 +1,12 @@
 package health;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static java.awt.Font.BOLD;
 import static java.awt.Font.ITALIC;
 
@@ -24,7 +19,6 @@ public final class DoctorView extends JFrame {
   Connection connection = null;
   ResultSet resultSet = null;
   PreparedStatement preparedStatement = null;
-  int currentRow = 0;
   int index;
   int requestID;
   String username;
@@ -37,7 +31,6 @@ public final class DoctorView extends JFrame {
       Class.forName("org.sqlite.JDBC");
       connection = DriverManager.getConnection("jdbc:sqlite:Health_Connect_DB");
       JOptionPane.showMessageDialog(null, "Connected");
-      Statement statement = connection.createStatement();
     } catch (ClassNotFoundException | SQLException e) {
       JOptionPane.showMessageDialog(null, e);
     }
@@ -79,7 +72,7 @@ public final class DoctorView extends JFrame {
     JLabel jLabel5 = new JLabel();
     JSeparator jSeparator1 = new JSeparator();
     JScrollPane jScrollPane1 = new JScrollPane();
-    requestsList = new JList();
+    requestsList = new JList<>();
     viewedRequests = new JLabel();
     welcome = new JLabel();
     JLabel jLabel6 = new JLabel();
@@ -96,7 +89,7 @@ public final class DoctorView extends JFrame {
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
     requestsList.setModel(
-        new AbstractListModel() {
+        new AbstractListModel<>() {
           final String[] strings = {"Item 1", "Item 2", "Item 3", "Item 4", "Item 5"};
 
           public int getSize() {
@@ -357,7 +350,7 @@ public final class DoctorView extends JFrame {
       if (resultSet.next()) {
         JOptionPane.showMessageDialog(null, "Username and Password is correct");
         element =
-            resultSet.getString("request.rid")
+            resultSet.getString("rid")
                 + "        "
                 + resultSet.getString("Date")
                 + "           "
@@ -365,7 +358,7 @@ public final class DoctorView extends JFrame {
         defaultListModel.addElement(element);
         while (resultSet.next()) {
           element =
-              resultSet.getString("request.rid")
+              resultSet.getString("rid")
                   + "        "
                   + resultSet.getString("Date")
                   + "           "
@@ -460,7 +453,7 @@ public final class DoctorView extends JFrame {
   private void requestsListValueChanged(ListSelectionEvent evt) {
     // TODO add your handling code here:
     if (requestsList.getSelectedIndex() == -1) {
-      // Nothing was selected.  Do nothing
+      System.out.println();
     } else index = requestsList.getSelectedIndex();
   }
 

@@ -22,10 +22,8 @@ import static java.awt.Font.ITALIC;
  * and open the template in the editor.
  */
 public class NewRequests extends JFrame {
-  int requestNumber;
   int count = 100;
   String userID;
-  String userType;
   Connection connection = null;
   ResultSet resultSet = null;
   PreparedStatement preparedStatement = null;

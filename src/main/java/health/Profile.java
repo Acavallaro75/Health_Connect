@@ -1,11 +1,8 @@
 package health;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.sql.Connection;
-import javax.swing.*;
-import java.sql.*;
-import java.sql.ResultSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static java.awt.Font.BOLD;
@@ -17,10 +14,6 @@ import static java.awt.Font.ITALIC;
  * and open the template in the editor.
  */
 public class Profile extends JFrame {
-  Connection connection = null;
-  ResultSet resultSet = null;
-  PreparedStatement preparedStatement = null;
-  int currentRow = 0;
   String username;
 
   public Profile(String patient) {

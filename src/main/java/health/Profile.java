@@ -58,7 +58,13 @@ public class Profile extends JFrame {
         });
 
     viewRequestButton.setText("View Your Requests");
-    viewRequestButton.addActionListener(this::viewRequestButtonActionPerformed);
+    viewRequestButton.addActionListener(evt -> {
+      try {
+        viewRequestButtonActionPerformed();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    });
 
     jLabel5.setFont(new Font("Papyrus", BOLD, 14));
     jLabel5.setForeground(new Color(51, 51, 255));
@@ -162,7 +168,7 @@ public class Profile extends JFrame {
     n.setVisible(true);
   }
 
-  public void viewRequestButtonActionPerformed(ActionEvent evt) {
+  public void viewRequestButtonActionPerformed() throws Exception {
     dispose();
     PatientView patientView = new PatientView(username);
     patientView.setVisible(true);

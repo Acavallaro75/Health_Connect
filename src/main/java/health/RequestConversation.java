@@ -21,85 +21,61 @@ public class RequestConversation extends JFrame {
   String userID;
   String userType;
   String element;
-  Connection connection = null;
-  ResultSet resultSet = null;
-  PreparedStatement preparedStatement = null;
+  String temp;
+  Connection connection;
+  ResultSet resultSet;
+  PreparedStatement preparedStatement;
 
-  public RequestConversation(int new_requestID, String new_userID, String new_userType) {
+  public RequestConversation(int new_requestID, String new_userID, String new_userType)
+      throws ClassNotFoundException, SQLException {
     initComponents();
     String sql;
     requestNumber = new_requestID;
     userID = new_userID;
     userType = new_userType;
-    try {
-      Class.forName("org.sqlite.JDBC");
-      connection = DriverManager.getConnection("jdbc:sqlite:Health_Connect_DB");
-      JOptionPane.showMessageDialog(null, "Connected");
-    } catch (ClassNotFoundException | SQLException e) {
-      JOptionPane.showMessageDialog(null, e);
-    }
+    Class.forName("org.sqlite.JDBC");
+    connection = DriverManager.getConnection("jdbc:sqlite:Health_Connect_DB");
+    JOptionPane.showMessageDialog(null, "Connected");
+
     sql = "SELECT * FROM Message WHERE RID = ?";
-    try {
-      preparedStatement = connection.prepareStatement(sql);
-      String temp = Integer.toString(requestNumber);
-      preparedStatement.setString(1, temp);
-      resultSet = preparedStatement.executeQuery();
-      currentRequest.setLineWrap(true);
-      currentRequest.setWrapStyleWord(true);
-      addToRequest.setLineWrap(true);
-      addToRequest.setWrapStyleWord(true);
-      if (resultSet.next()) {
+    preparedStatement = connection.prepareStatement(sql);
+    temp = Integer.toString(requestNumber);
+    preparedStatement.setString(1, temp);
+    resultSet = preparedStatement.executeQuery();
+    currentRequest.setLineWrap(true);
+    currentRequest.setWrapStyleWord(true);
+    addToRequest.setLineWrap(true);
+    addToRequest.setWrapStyleWord(true);
+    if (resultSet.next()) {
+      element = resultSet.getString("TimeStamp");
+      currentRequest.append(element + "\n");
+      element = resultSet.getString("Message");
+      currentRequest.append(element + "\n");
+      while (resultSet.next()) {
         element = resultSet.getString("TimeStamp");
         currentRequest.append(element + "\n");
         element = resultSet.getString("Message");
         currentRequest.append(element + "\n");
-        while (resultSet.next()) {
-          element = resultSet.getString("TimeStamp");
-          currentRequest.append(element + "\n");
-          element = resultSet.getString("Message");
-          currentRequest.append(element + "\n");
-        }
-      } else {
-        JOptionPane.showMessageDialog(null, "No message added");
       }
-      if ("Doctor".equals(userType)) {
-        sql = "UPDATE Message SET DUsername = ? WHERE RID = ?";
-        preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, userID);
-        preparedStatement.setString(2, temp);
-        preparedStatement.execute();
-      }
-
-    } catch (HeadlessException | SQLException e) {
-      JOptionPane.showMessageDialog(null, e);
-    } finally {
-      try {
-        resultSet.close();
-        preparedStatement.close();
-      } catch (SQLException e) {
-        JOptionPane.showMessageDialog(null, e);
-      }
+    } else {
+      JOptionPane.showMessageDialog(null, "No message added");
+    }
+    if ("Doctor".equals(userType)) {
+      sql = "UPDATE Message SET DUsername = ? WHERE RID = ?";
+      preparedStatement = connection.prepareStatement(sql);
+      preparedStatement.setString(1, userID);
+      preparedStatement.setString(2, temp);
+      preparedStatement.execute();
     }
 
     sql = "SELECT Status FROM Request WHERE RID = ?";
-    try {
-      preparedStatement = connection.prepareStatement(sql);
-      String temp = Integer.toString(requestNumber);
-      preparedStatement.setString(1, temp);
-      resultSet = preparedStatement.executeQuery();
-      if ("Closed".equals(resultSet.getString("Status"))) {
-        closeButton.setEnabled(false);
-        addButton.setEnabled(false);
-      }
-    } catch (SQLException e) {
-      JOptionPane.showMessageDialog(null, e);
-    } finally {
-      try {
-        resultSet.close();
-        preparedStatement.close();
-      } catch (SQLException e) {
-        JOptionPane.showMessageDialog(null, e);
-      }
+    preparedStatement = connection.prepareStatement(sql);
+    temp = Integer.toString(requestNumber);
+    preparedStatement.setString(1, temp);
+    resultSet = preparedStatement.executeQuery();
+    if ("Closed".equals(resultSet.getString("Status"))) {
+      closeButton.setEnabled(false);
+      addButton.setEnabled(false);
     }
   }
 
@@ -351,15 +327,12 @@ public class RequestConversation extends JFrame {
     }
   }
 
-  private void backButtonActionPerformed(ActionEvent evt) throws Exception {
-    // TODO add your handling code here:
-    try {
+  private void backButtonActionPerformed() throws Exception {
+
+    if (resultSet == null && preparedStatement == null) {
       resultSet.close();
       preparedStatement.close();
-    } catch (SQLException e) {
-      JOptionPane.showMessageDialog(null, e);
     }
-    NewJFrame jFrame = new NewJFrame();
     if ("Doctor".equals(userType)) {
       DoctorView doctorView = new DoctorView(userID);
       doctorView.setVisible(true);
@@ -371,28 +344,12 @@ public class RequestConversation extends JFrame {
   }
 
   public static void main(String[] args) throws Exception {
-    try {
-      for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-        if ("Nimbus".equals(info.getName())) {
-          UIManager.setLookAndFeel(info.getClassName());
-          break;
-        }
+    for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+      if ("Nimbus".equals(info.getName())) {
+        UIManager.setLookAndFeel(info.getClassName());
+        break;
       }
-    } catch (ClassNotFoundException
-        | InstantiationException
-        | IllegalAccessException
-        | UnsupportedLookAndFeelException ex) {
-      Logger.getLogger(RequestConversation.class.getName()).log(Level.SEVERE, null, ex);
     }
-
-    NewJFrame jFrame = new NewJFrame();
-    final DoctorView doctorView = new DoctorView(jFrame.getUsername());
-    /* Create and display the form */
-    EventQueue.invokeLater(
-        () ->
-            new RequestConversation(
-                    doctorView.getRequestID(), doctorView.getUsername(), doctorView.getUserType())
-                .setVisible(true));
   }
 
   // Variables declaration - do not modify //

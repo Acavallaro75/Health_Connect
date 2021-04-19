@@ -30,7 +30,7 @@ public class ProfileTest {
   public void testViewRequests() {
 
     // Testing that program launches the new window correctly //
-    assertDoesNotThrow(() -> profile.viewRequestButtonActionPerformed(null));
+    assertDoesNotThrow(() -> profile.viewRequestButtonActionPerformed());
   }
 
   @Test

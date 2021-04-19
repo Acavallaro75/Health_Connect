@@ -4,8 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.sql.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static java.awt.Font.BOLD;
 import static java.awt.Font.ITALIC;
 
@@ -15,23 +13,21 @@ import static java.awt.Font.ITALIC;
  * and open the template in the editor.
  */
 public final class PatientView extends JFrame {
-  Connection connection = null;
+  Connection connection;
   ResultSet resultSet = null;
   PreparedStatement preparedStatement = null;
   int requestID;
   String username;
   String userType;
+  public boolean test;
   DefaultListModel<String> defaultListModel = new DefaultListModel<>();
 
-  public PatientView(String patient) {
+  public PatientView(String patient) throws Exception {
     initComponents();
-    try {
-      Class.forName("org.sqlite.JDBC");
-      connection = DriverManager.getConnection("jdbc:sqlite:Health_Connect_DB");
-      JOptionPane.showMessageDialog(null, "Connected");
-    } catch (ClassNotFoundException | SQLException e) {
-      JOptionPane.showMessageDialog(null, e);
-    }
+    Class.forName("org.sqlite.JDBC");
+    connection = DriverManager.getConnection("jdbc:sqlite:Health_Connect_DB");
+    JOptionPane.showMessageDialog(null, "Connected");
+
     username = patient;
     setUsername(patient);
     userType = "Patient";
@@ -43,16 +39,36 @@ public final class PatientView extends JFrame {
     return this.username;
   }
 
-  public void setUsername(String username) {
-    this.username = username;
+  public void setUsername(String username) throws Exception {
+    if (username.length() >= 1) {
+      this.username = username;
+    } else {
+      throw new Exception("Invalid Username");
+    }
   }
 
-  public void setRequestID(int requestID) {
-    this.requestID = requestID;
+  public int getRequestID() {
+    return this.requestID;
   }
 
-  public void setUserType(String userType) {
-    this.userType = userType;
+  public void setRequestID(int requestID) throws Exception {
+    if (requestID >= 1 && requestID < 100000) {
+      this.requestID = requestID;
+    } else {
+      throw new Exception("Invalid Request ID");
+    }
+  }
+
+  public String getUserType() {
+    return this.userType;
+  }
+
+  public void setUserType(String userType) throws Exception {
+    if (userType.equalsIgnoreCase("Patient")) {
+      this.userType = userType;
+    } else {
+      throw new Exception("Invalid User Type");
+    }
   }
 
   /**
@@ -74,30 +90,39 @@ public final class PatientView extends JFrame {
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
     inProgressButton.setText("In Progress Requests");
-    inProgressButton.addActionListener(this::InProgressButtonActionPerformed);
-
-    closedButton.setText("Closed Requests");
-    closedButton.addActionListener(this::closedButtonActionPerformed);
-
-    jList1.setModel(
-        new AbstractListModel<>() {
-          final String[] strings = {"Item 1", "Item 2", "Item 3", "Item 4", "Item 5"};
-
-          public int getSize() {
-            return strings.length;
-          }
-
-          public Object getElementAt(int i) {
-            return strings[i];
+    inProgressButton.addActionListener(
+        evt -> {
+          try {
+            InProgressButtonActionPerformed();
+          } catch (Exception e) {
+            e.printStackTrace();
           }
         });
+
+    closedButton.setText("Closed Requests");
+    closedButton.addActionListener(
+        evt -> {
+          try {
+            closedButtonActionPerformed();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        });
+
     jScrollPane1.setViewportView(jList1);
 
     jLabel1.setFont(new Font("Eras Demi ITC", BOLD | ITALIC, 24));
     jLabel1.setText("Your Request History");
 
     openRequest.setText("Open Selected Request");
-    openRequest.addActionListener(this::openRequestActionPerformed);
+    openRequest.addActionListener(
+        evt -> {
+          try {
+            openRequestActionPerformed();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        });
 
     jLabel7.setFont(new Font("Papyrus", BOLD, 14));
     jLabel7.setForeground(new Color(51, 51, 255));
@@ -107,7 +132,14 @@ public final class PatientView extends JFrame {
     backButton.addActionListener(this::backButtonActionPerformed);
 
     newButton.setText("New Requests");
-    newButton.addActionListener(this::newButtonActionPerformed);
+    newButton.addActionListener(
+        evt -> {
+          try {
+            newButtonActionPerformed();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        });
 
     GroupLayout layout = new GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -222,8 +254,7 @@ public final class PatientView extends JFrame {
     pack();
   }
 
-  private void InProgressButtonActionPerformed(ActionEvent evt) {
-    // TODO add your handling code here:
+  public void InProgressButtonActionPerformed() throws SQLException {
     jLabel1.setText("Your Opened Requests");
     jList1.setVisible(true);
     String element;
@@ -231,37 +262,28 @@ public final class PatientView extends JFrame {
     defaultListModel.removeAllElements();
     element = "RID        Date";
     defaultListModel.addElement(element);
-    try {
-      preparedStatement = connection.prepareStatement(sql);
-      preparedStatement.setString(1, "In Progress");
-      preparedStatement.setString(2, username);
-      resultSet = preparedStatement.executeQuery();
-      if (resultSet.next()) {
-        JOptionPane.showMessageDialog(null, "Username and Password is correct");
+    preparedStatement = connection.prepareStatement(sql);
+    preparedStatement.setString(1, "In Progress");
+    preparedStatement.setString(2, username);
+    resultSet = preparedStatement.executeQuery();
+    if (resultSet.next()) {
+      test = true;
+      JOptionPane.showMessageDialog(null, "Username and Password is correct");
+      element = resultSet.getString("RID") + "        " + resultSet.getString("Date");
+      defaultListModel.addElement(element);
+      while (resultSet.next()) {
+        test = true;
         element = resultSet.getString("RID") + "        " + resultSet.getString("Date");
         defaultListModel.addElement(element);
-        while (resultSet.next()) {
-          element = resultSet.getString("RID") + "        " + resultSet.getString("Date");
-          defaultListModel.addElement(element);
-        }
-        jList1.setModel(defaultListModel);
-      } else {
-        JOptionPane.showMessageDialog(null, "No requests are in progress.");
       }
-    } catch (SQLException | HeadlessException e) {
-      JOptionPane.showMessageDialog(null, e);
-    } finally {
-      try {
-        resultSet.close();
-        preparedStatement.close();
-      } catch (SQLException e) {
-        JOptionPane.showMessageDialog(null, e);
-      }
+      jList1.setModel(defaultListModel);
+    } else {
+      JOptionPane.showMessageDialog(null, "No requests are in progress.");
+      test = false;
     }
   }
 
-  private void newButtonActionPerformed(ActionEvent evt) {
-    // TODO add your handling code here:
+  public void newButtonActionPerformed() throws SQLException {
     jLabel1.setText("Your New Requests");
     jList1.setVisible(true);
     String element;
@@ -269,37 +291,28 @@ public final class PatientView extends JFrame {
     defaultListModel.removeAllElements();
     element = "RID        Date";
     defaultListModel.addElement(element);
-    try {
-      preparedStatement = connection.prepareStatement(sql);
-      preparedStatement.setString(1, "New");
-      preparedStatement.setString(2, username);
-      resultSet = preparedStatement.executeQuery();
-      if (resultSet.next()) {
-        JOptionPane.showMessageDialog(null, "Username and Password is correct");
+    preparedStatement = connection.prepareStatement(sql);
+    preparedStatement.setString(1, "New");
+    preparedStatement.setString(2, username);
+    resultSet = preparedStatement.executeQuery();
+    if (resultSet.next()) {
+      test = true;
+      JOptionPane.showMessageDialog(null, "Username and Password is correct");
+      element = resultSet.getString("RID") + "        " + resultSet.getString("Date");
+      defaultListModel.addElement(element);
+      while (resultSet.next()) {
+        test = true;
         element = resultSet.getString("RID") + "        " + resultSet.getString("Date");
         defaultListModel.addElement(element);
-        while (resultSet.next()) {
-          element = resultSet.getString("RID") + "        " + resultSet.getString("Date");
-          defaultListModel.addElement(element);
-        }
-        jList1.setModel(defaultListModel);
-      } else {
-        JOptionPane.showMessageDialog(null, "No new requests.");
       }
-    } catch (SQLException | HeadlessException e) {
-      JOptionPane.showMessageDialog(null, e);
-    } finally {
-      try {
-        resultSet.close();
-        preparedStatement.close();
-      } catch (SQLException e) {
-        JOptionPane.showMessageDialog(null, e);
-      }
+      jList1.setModel(defaultListModel);
+    } else {
+      JOptionPane.showMessageDialog(null, "No new requests.");
+      test = false;
     }
   }
 
-  private void closedButtonActionPerformed(ActionEvent evt) {
-    // TODO add your handling code here:
+  public void closedButtonActionPerformed() throws SQLException {
     jLabel1.setText("Your Closed Requests");
     jList1.setVisible(true);
     String element;
@@ -307,78 +320,62 @@ public final class PatientView extends JFrame {
     defaultListModel.removeAllElements();
     element = "RID        Date";
     defaultListModel.addElement(element);
-    try {
-      preparedStatement = connection.prepareStatement(sql);
-      preparedStatement.setString(1, "Closed");
-      preparedStatement.setString(2, username);
-      resultSet = preparedStatement.executeQuery();
-      if (resultSet.next()) {
-        JOptionPane.showMessageDialog(null, "Username and Password is correct");
+    preparedStatement = connection.prepareStatement(sql);
+    preparedStatement.setString(1, "Closed");
+    preparedStatement.setString(2, username);
+    resultSet = preparedStatement.executeQuery();
+    if (resultSet.next()) {
+      test = true;
+      JOptionPane.showMessageDialog(null, "Username and Password is correct");
+      element = resultSet.getString("RID") + "        " + resultSet.getString("Date");
+      defaultListModel.addElement(element);
+      while (resultSet.next()) {
         element = resultSet.getString("RID") + "        " + resultSet.getString("Date");
         defaultListModel.addElement(element);
-        while (resultSet.next()) {
-          element = resultSet.getString("RID") + "        " + resultSet.getString("Date");
-          defaultListModel.addElement(element);
-        }
-        jList1.setModel(defaultListModel);
-      } else {
-        JOptionPane.showMessageDialog(null, "No requests have been closed.");
       }
-    } catch (SQLException | HeadlessException e) {
-      JOptionPane.showMessageDialog(null, e);
-    } finally {
-      try {
-        resultSet.close();
-        preparedStatement.close();
-      } catch (SQLException e) {
-        JOptionPane.showMessageDialog(null, e);
-      }
+      jList1.setModel(defaultListModel);
+    } else {
+      test = false;
+      JOptionPane.showMessageDialog(null, "No requests have been closed.");
     }
   }
 
   private void backButtonActionPerformed(ActionEvent evt) {
-    // TODO add your handling code here:
     dispose();
     Profile profile = new Profile(username);
     profile.setVisible(true);
   }
 
-  private void openRequestActionPerformed(ActionEvent evt) {
-    // TODO add your handling code here:
-    if (jList1.getSelectedIndex() != -1) {
+  public void openRequestActionPerformed() throws Exception {
+    if (jList1.getSelectedIndex() == -1) {
+      JOptionPane.showMessageDialog(null, "Please select a request");
+      throw new Exception("No Selection Made");
+    } else {
       String temp_requestID = jList1.getSelectedValue().toString();
       temp_requestID = temp_requestID.substring(0, 3);
       requestID = Integer.parseInt(temp_requestID);
       setRequestID(requestID);
+
       RequestConversation requestConversation =
           new RequestConversation(requestID, username, userType);
       dispose();
       requestConversation.setVisible(true);
-    } else JOptionPane.showMessageDialog(null, "Please select a request");
+    }
   }
 
-  public static void main(String[] args) {
-    try {
-      for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-        if ("Nimbus".equals(info.getName())) {
-          UIManager.setLookAndFeel(info.getClassName());
-          break;
-        }
+  public static void main(String[] args)
+      throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException,
+          IllegalAccessException {
+    for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+      if ("Nimbus".equals(info.getName())) {
+        UIManager.setLookAndFeel(info.getClassName());
+        break;
       }
-    } catch (ClassNotFoundException
-        | InstantiationException
-        | IllegalAccessException
-        | UnsupportedLookAndFeelException ex) {
-      Logger.getLogger(PatientView.class.getName()).log(Level.SEVERE, null, ex);
     }
-
-    final NewJFrame jFrame = new NewJFrame();
-
-    EventQueue.invokeLater(() -> new PatientView(jFrame.getUsername()).setVisible(true));
   }
 
   // Variable declarations //
   private JLabel jLabel1;
-  private JList jList1;
+  public JList jList1;
   // End of variables declaration //
 }

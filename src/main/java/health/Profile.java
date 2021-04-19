@@ -156,22 +156,19 @@ public class Profile extends JFrame {
     pack();
   }
 
-  private void makeRequestButtonActionPerformed() throws SQLException, ClassNotFoundException {
-    // TODO add your handling code here:
+  public void makeRequestButtonActionPerformed() throws SQLException, ClassNotFoundException {
     dispose();
     NewRequests n = new NewRequests(username);
     n.setVisible(true);
   }
 
-  private void viewRequestButtonActionPerformed(ActionEvent evt) {
-    // TODO add your handling code here:
+  public void viewRequestButtonActionPerformed(ActionEvent evt) {
     dispose();
     PatientView patientView = new PatientView(username);
     patientView.setVisible(true);
   }
 
-  private void logoutActionPerformed(ActionEvent evt) {
-    // TODO add your handling code here:
+  public void logoutActionPerformed(ActionEvent evt) {
     int pane =
         JOptionPane.showConfirmDialog(
             null, "Are you sure you want to logout?", "Logout", JOptionPane.YES_NO_OPTION);
@@ -182,24 +179,15 @@ public class Profile extends JFrame {
     }
   }
 
-  public static void main(String[] args) {
-    try {
-      for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-        if ("Nimbus".equals(info.getName())) {
-          UIManager.setLookAndFeel(info.getClassName());
-          break;
-        }
+  public static void main(String[] args)
+      throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException,
+          IllegalAccessException {
+    for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+      if ("Nimbus".equals(info.getName())) {
+        UIManager.setLookAndFeel(info.getClassName());
+        break;
       }
-    } catch (ClassNotFoundException
-        | InstantiationException
-        | IllegalAccessException
-        | UnsupportedLookAndFeelException ex) {
-      Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
     }
-
-    final NewJFrame jFrame = new NewJFrame();
-
-    EventQueue.invokeLater(() -> new Profile(jFrame.getUsername()).setVisible(true));
   }
 
   // Variable declarations //

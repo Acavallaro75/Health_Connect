@@ -1,18 +1,11 @@
 package health;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.*;
 import static java.awt.Font.BOLD;
 import static java.awt.Font.ITALIC;
 
@@ -23,30 +16,24 @@ import static java.awt.Font.ITALIC;
  */
 public class NewRequests extends JFrame {
   int count = 100;
+  boolean test;
   String userID;
-  Connection connection = null;
-  ResultSet resultSet = null;
+  Connection connection;
+  ResultSet resultSet;
   PreparedStatement preparedStatement = null;
 
-  public NewRequests(String new_userID) {
+  public NewRequests(String new_userID) throws SQLException, ClassNotFoundException {
     initComponents();
     userID = new_userID;
-    try {
-      Class.forName("org.sqlite.JDBC");
-      connection = DriverManager.getConnection("jdbc:sqlite:Health_Connect_DB");
-      JOptionPane.showMessageDialog(null, "Connected");
-      Statement statement = connection.createStatement();
-      String sql = "SELECT RID FROM Request";
-      resultSet = statement.executeQuery(sql);
-      while (resultSet.next()) count++;
-    } catch (ClassNotFoundException | SQLException e) {
-      JOptionPane.showMessageDialog(null, e);
-    } finally {
-      try {
-        resultSet.close();
-      } catch (SQLException e) {
-        JOptionPane.showMessageDialog(null, e);
-      }
+    Class.forName("org.sqlite.JDBC");
+    connection = DriverManager.getConnection("jdbc:sqlite:Health_Connect_DB");
+    JOptionPane.showMessageDialog(null, "Connected");
+    Statement statement = connection.createStatement();
+    String sql = "SELECT RID FROM Request";
+    resultSet = statement.executeQuery(sql);
+
+    while (resultSet.next()) {
+      count++;
     }
 
     RequestID.setText("RequestID: " + count);
@@ -86,7 +73,14 @@ public class NewRequests extends JFrame {
     jScrollPane1.setViewportView(jTextArea1);
 
     createButton.setText("Create Request");
-    createButton.addActionListener(this::createButtonActionPerformed);
+    createButton.addActionListener(
+        evt -> {
+          try {
+            createButtonActionPerformed();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        });
 
     cancelButton.setText("Cancel");
     cancelButton.addActionListener(this::CancelButtonActionPerformed);
@@ -192,18 +186,22 @@ public class NewRequests extends JFrame {
     pack();
   }
 
-  private void createButtonActionPerformed(ActionEvent evt) {
-    // TODO add your handling code here:
-    int pane =
-        JOptionPane.showConfirmDialog(
-            null,
-            "Are you sure you want to create the request?",
-            "Create Request",
-            JOptionPane.YES_NO_OPTION);
-    if (pane == 0) {
-      String sql = "INSERT INTO Message (RID, DUsername, TimeStamp, Message) VALUES (?, ?, ?, ?)";
+  public void createButtonActionPerformed() throws Exception {
 
-      try {
+    if (jTextArea1.getText().equalsIgnoreCase("Insert new request here...")
+        || jTextArea1.getText().isEmpty()) {
+      JOptionPane.showMessageDialog(null, "No message added. Please try again.");
+      throw new Exception("No Message Added");
+    } else {
+      int pane =
+          JOptionPane.showConfirmDialog(
+              null,
+              "Are you sure you want to create the request?",
+              "Create Request",
+              JOptionPane.YES_NO_OPTION);
+      if (pane == 0) {
+        String sql = "INSERT INTO Message (RID, DUsername, TimeStamp, Message) VALUES (?, ?, ?, ?)";
+
         preparedStatement = connection.prepareStatement(sql);
         String temp = Integer.toString(count);
         preparedStatement.setString(1, temp);
@@ -223,15 +221,9 @@ public class NewRequests extends JFrame {
         preparedStatement.setString(3, timestamp);
         preparedStatement.setString(4, "New");
         preparedStatement.execute();
-      } catch (SQLException | HeadlessException e) {
-        JOptionPane.showMessageDialog(null, e);
-      } finally {
-        try {
-          resultSet.close();
-          preparedStatement.close();
-        } catch (SQLException e) {
-          JOptionPane.showMessageDialog(null, e);
-        }
+
+        resultSet.close();
+        preparedStatement.close();
       }
       PatientView patientView = new PatientView(userID);
       patientView.setVisible(true);
@@ -239,37 +231,34 @@ public class NewRequests extends JFrame {
     }
   }
 
-  private void CancelButtonActionPerformed(ActionEvent evt) {
-    // TODO add your handling code here:
-    Profile profile = new Profile(userID);
-    profile.setVisible(true);
-    dispose();
+  public void CancelButtonActionPerformed(ActionEvent evt) {
+    int pane =
+        JOptionPane.showConfirmDialog(
+            null, "Are you sure you want to cancel?", "Cancel", JOptionPane.YES_NO_OPTION);
+    if (pane == 0) {
+      test = true;
+      dispose();
+      Profile profile = new Profile(userID);
+      profile.setVisible(true);
+    } else {
+      test = false;
+    }
   }
 
-  public static void main(String[] args) {
-    try {
-      for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-        if ("Nimbus".equals(info.getName())) {
-          UIManager.setLookAndFeel(info.getClassName());
-          break;
-        }
+  public static void main(String[] args)
+      throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException,
+          IllegalAccessException {
+    for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+      if ("Nimbus".equals(info.getName())) {
+        UIManager.setLookAndFeel(info.getClassName());
+        break;
       }
-    } catch (ClassNotFoundException
-        | InstantiationException
-        | IllegalAccessException
-        | UnsupportedLookAndFeelException ex) {
-      Logger.getLogger(NewRequests.class.getName()).log(Level.SEVERE, null, ex);
     }
-
-    NewJFrame n = new NewJFrame();
-    final PatientView v = new PatientView(n.getUsername());
-    /* Create and display the form */
-    EventQueue.invokeLater(() -> new NewRequests(v.getUsername()).setVisible(true));
   }
 
   // Variable declarations //
   private JLabel PatientID;
   private JLabel RequestID;
-  private JTextArea jTextArea1;
+  public JTextArea jTextArea1;
   // End of variables declaration //
 }

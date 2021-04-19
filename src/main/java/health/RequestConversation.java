@@ -1,18 +1,13 @@
 package health;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.*;
 import static java.awt.Font.BOLD;
 import static java.awt.Font.ITALIC;
 
@@ -40,7 +35,6 @@ public class RequestConversation extends JFrame {
       Class.forName("org.sqlite.JDBC");
       connection = DriverManager.getConnection("jdbc:sqlite:Health_Connect_DB");
       JOptionPane.showMessageDialog(null, "Connected");
-      Statement statement = connection.createStatement();
     } catch (ClassNotFoundException | SQLException e) {
       JOptionPane.showMessageDialog(null, e);
     }
@@ -139,10 +133,8 @@ public class RequestConversation extends JFrame {
     addButton.addActionListener(this::addButtonActionPerformed);
 
     closeButton.setText("Close Request");
-    closeButton.addActionListener(this::closeButtonActionPerformed);
 
     backButton.setText("Back");
-    backButton.addActionListener(this::backButtonActionPerformed);
 
     jLabel7.setFont(new Font("Papyrus", BOLD, 14));
     jLabel7.setForeground(new Color(51, 51, 255));
@@ -320,7 +312,7 @@ public class RequestConversation extends JFrame {
     }
   }
 
-  private void closeButtonActionPerformed(ActionEvent evt) {
+  private void closeButtonActionPerformed(ActionEvent evt) throws Exception {
     // TODO add your handling code here:
     int pane =
         JOptionPane.showConfirmDialog(
@@ -359,7 +351,7 @@ public class RequestConversation extends JFrame {
     }
   }
 
-  private void backButtonActionPerformed(ActionEvent evt) {
+  private void backButtonActionPerformed(ActionEvent evt) throws Exception {
     // TODO add your handling code here:
     try {
       resultSet.close();
@@ -378,7 +370,7 @@ public class RequestConversation extends JFrame {
     dispose();
   }
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     try {
       for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
         if ("Nimbus".equals(info.getName())) {

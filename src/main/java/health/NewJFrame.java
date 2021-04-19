@@ -263,6 +263,8 @@ public class NewJFrame extends JFrame {
       }
     } catch (HeadlessException | SQLException e) {
       JOptionPane.showMessageDialog(null, e);
+    } catch (Exception e) {
+      e.printStackTrace();
     } finally {
       try {
         resultSet.close();

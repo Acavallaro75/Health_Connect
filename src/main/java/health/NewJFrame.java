@@ -2,10 +2,8 @@ package health;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.sql.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Arrays;
 import static java.awt.Font.*;
 
 /*
@@ -38,8 +36,12 @@ public class NewJFrame extends JFrame {
     return this.username;
   }
 
-  public void setUsername() {
-    this.username = this.txt_username.getText();
+  public void setUsername(String username) throws Exception {
+    if (!username.isEmpty()) {
+      this.username = username;
+    } else {
+      throw new Exception("Username cannot be empty");
+    }
   }
 
   /**
@@ -62,21 +64,31 @@ public class NewJFrame extends JFrame {
     jLabel1.setFont(new Font("Courier New", PLAIN, 12));
     jLabel1.setText("Username");
 
-    txt_username.addActionListener(this::txt_usernameActionPerformed);
-
     jLabel2.setFont(new Font("Courier New", PLAIN, 12));
     jLabel2.setText("Password");
 
     loginAsPatient.setText("Login as Patient");
-    loginAsPatient.addActionListener(this::LoginAsPatientActionPerformed);
+    loginAsPatient.addActionListener(
+        evt -> {
+          try {
+            LoginAsPatientActionPerformed();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        });
 
     loginAsDoctor.setText("Login as Doctor");
-    loginAsDoctor.addActionListener(this::LoginAsDoctorActionPerformed);
+    loginAsDoctor.addActionListener(
+        evt -> {
+          try {
+            LoginAsDoctorActionPerformed();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        });
 
     jLabel3.setFont(new Font("Eras Demi ITC", ITALIC, 24));
     jLabel3.setText("Login");
-
-    txt_password.addActionListener(this::txt_passwordActionPerformed);
 
     jLabel4.setFont(new Font("Papyrus", BOLD, 14));
     jLabel4.setForeground(new Color(51, 51, 255));
@@ -210,15 +222,17 @@ public class NewJFrame extends JFrame {
     pack();
   }
 
-  private void LoginAsPatientActionPerformed(ActionEvent evt) {
-    // TODO add your handling code here:
-    String sql = "SELECT * FROM Patient WHERE username = ? AND password = ?";
-    try {
+  public void LoginAsPatientActionPerformed() throws Exception {
+
+    if (txt_username.getText().isEmpty() || txt_password.getText().isEmpty()) {
+      throw new Exception("Username or Password cannot be left blank");
+    } else {
+      String sql = "SELECT * FROM Patient WHERE username = ? AND password = ?";
       preparedStatement = connection.prepareStatement(sql);
       preparedStatement.setString(1, txt_username.getText());
       preparedStatement.setString(2, String.valueOf(txt_password.getPassword()));
       username = txt_username.getText();
-      setUsername();
+      setUsername(username);
       JOptionPane.showMessageDialog(null, "Username = " + username);
       resultSet = preparedStatement.executeQuery();
 
@@ -228,29 +242,24 @@ public class NewJFrame extends JFrame {
         profile.setVisible(true);
         dispose();
       } else {
-        JOptionPane.showMessageDialog(null, "Incorrect username or password.  Please try again.");
-      }
-    } catch (HeadlessException | SQLException e) {
-      JOptionPane.showMessageDialog(null, e);
-    } finally {
-      try {
-        resultSet.close();
-        preparedStatement.close();
-      } catch (SQLException e) {
-        JOptionPane.showMessageDialog(null, e);
+        JOptionPane.showMessageDialog(null, "Incorrect username or password. Please try again.");
+        throw new Exception("Incorrect username or password");
       }
     }
   }
 
-  private void LoginAsDoctorActionPerformed(ActionEvent evt) {
-    // TODO add your handling code here:
-    String sql = "SELECT * FROM Doctor WHERE username = ? AND password = ?";
-    try {
+  public void LoginAsDoctorActionPerformed() throws Exception {
+
+    if (txt_username.getText().isEmpty() || txt_password.getText().isEmpty()) {
+      throw new Exception("Username or Password cannot be left blank");
+    } else {
+      String sql = "SELECT * FROM Doctor WHERE username = ? AND password = ?";
+
       preparedStatement = connection.prepareStatement(sql);
       preparedStatement.setString(1, txt_username.getText());
       preparedStatement.setString(2, String.valueOf(txt_password.getPassword()));
       username = txt_username.getText();
-      setUsername();
+      setUsername(username);
 
       resultSet = preparedStatement.executeQuery();
       if (resultSet.next()) {
@@ -260,49 +269,24 @@ public class NewJFrame extends JFrame {
         dispose();
       } else {
         JOptionPane.showMessageDialog(null, "Incorrect username or password. Please try again.");
-      }
-    } catch (HeadlessException | SQLException e) {
-      JOptionPane.showMessageDialog(null, e);
-    } catch (Exception e) {
-      e.printStackTrace();
-    } finally {
-      try {
-        resultSet.close();
-        preparedStatement.close();
-      } catch (SQLException e) {
-        JOptionPane.showMessageDialog(null, e);
+        throw new Exception("Incorrect username or password");
       }
     }
   }
 
-  private void txt_usernameActionPerformed(ActionEvent evt) {
-    // TODO add your handling code here:
-  }
-
-  private void txt_passwordActionPerformed(ActionEvent evt) {
-    // TODO add your handling code here:
-  }
-
-  public static void main(String[] args) {
-    try {
-      for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-        if ("Nimbus".equals(info.getName())) {
-          UIManager.setLookAndFeel(info.getClassName());
-          break;
-        }
+  public static void main(String[] args)
+      throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException,
+          IllegalAccessException {
+    for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+      if ("Nimbus".equals(info.getName())) {
+        UIManager.setLookAndFeel(info.getClassName());
+        break;
       }
-    } catch (ClassNotFoundException
-        | InstantiationException
-        | IllegalAccessException
-        | UnsupportedLookAndFeelException ex) {
-      Logger.getLogger(NewJFrame.class.getName()).log(Level.SEVERE, null, ex);
     }
-
-    EventQueue.invokeLater(() -> new NewJFrame().setVisible(true));
   }
 
   // Variable declaration //
-  private JPasswordField txt_password;
+  public JPasswordField txt_password;
   public JTextField txt_username;
   // End of variables declaration //
 }

@@ -340,7 +340,7 @@ public final class PatientView extends JFrame {
     }
   }
 
-  private void backButtonActionPerformed(ActionEvent evt) {
+  public void backButtonActionPerformed(ActionEvent evt) {
     dispose();
     Profile profile = new Profile(username);
     profile.setVisible(true);

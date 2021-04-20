@@ -38,6 +38,13 @@ public class PatientViewTests {
   }
 
   @Test
+  public void testBackButton() {
+
+    // Test the back button //
+    assertDoesNotThrow(() -> patientView.backButtonActionPerformed(null));
+  }
+
+  @Test
   public void testGetUsername() throws Exception {
 
     // Checking if the passing of parameters is working correctly for username //

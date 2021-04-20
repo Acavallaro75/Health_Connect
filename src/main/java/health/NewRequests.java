@@ -221,9 +221,6 @@ public class NewRequests extends JFrame {
         preparedStatement.setString(3, timestamp);
         preparedStatement.setString(4, "New");
         preparedStatement.execute();
-
-        resultSet.close();
-        preparedStatement.close();
       }
       PatientView patientView = new PatientView(userID);
       patientView.setVisible(true);

@@ -47,6 +47,10 @@ public class Health {
       throw new Exception("No Doctors Exist");
     }
 
+    connection.close();
+    statement.close();
+    resultSet.close();
+
     // open login page
     NewJFrame jFrame = new NewJFrame();
     jFrame.setVisible(true);

@@ -108,6 +108,7 @@ public class DoctorViewTests {
     statement.execute(sql);
     doctorView.newRequestButtonActionPerformed(); // Sets test to true //
     assertTrue(doctorView.test);
+    statement.close();
 
     // Adding multiple new requests to the database //
     sql =

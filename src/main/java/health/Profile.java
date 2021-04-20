@@ -4,8 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static java.awt.Font.BOLD;
 import static java.awt.Font.ITALIC;
 

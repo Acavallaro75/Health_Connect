@@ -245,6 +245,8 @@ public class NewJFrame extends JFrame {
         JOptionPane.showMessageDialog(null, "Incorrect username or password. Please try again.");
         throw new Exception("Incorrect username or password");
       }
+      connection.close();
+      preparedStatement.close();
     }
   }
 
@@ -272,6 +274,8 @@ public class NewJFrame extends JFrame {
         throw new Exception("Incorrect username or password");
       }
     }
+    connection.close();
+    preparedStatement.close();
   }
 
   public static void main(String[] args)

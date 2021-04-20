@@ -2,12 +2,9 @@ package health;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static java.awt.Font.BOLD;
 import static java.awt.Font.ITALIC;
 
@@ -106,11 +103,26 @@ public class RequestConversation extends JFrame {
     jScrollPane2.setViewportView(addToRequest);
 
     addButton.setText("Add to Request");
-    addButton.addActionListener(this::addButtonActionPerformed);
+    addButton.addActionListener(
+        evt -> {
+          try {
+            addButtonActionPerformed();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        });
 
     closeButton.setText("Close Request");
 
     backButton.setText("Back");
+    backButton.addActionListener(
+        evt -> {
+          try {
+            backButtonActionPerformed();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        });
 
     jLabel7.setFont(new Font("Papyrus", BOLD, 14));
     jLabel7.setForeground(new Color(51, 51, 255));
@@ -236,8 +248,7 @@ public class RequestConversation extends JFrame {
     pack();
   }
 
-  private void addButtonActionPerformed(ActionEvent evt) {
-    // TODO add your handling code here:
+  public void addButtonActionPerformed() throws SQLException {
     int pane =
         JOptionPane.showConfirmDialog(
             null,
@@ -247,49 +258,38 @@ public class RequestConversation extends JFrame {
     if (pane == 0) {
       String sql = "INSERT INTO Message (RID, DUsername, TimeStamp, Message) VALUES (?, ?, ?, ?)";
 
-      try {
-        preparedStatement = connection.prepareStatement(sql);
-        String temp = Integer.toString(requestNumber);
-        preparedStatement.setString(1, temp);
-        preparedStatement.setString(2, userID);
-        Date date = new Date();
-        String timestamp = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date);
-        preparedStatement.setString(3, timestamp);
-        String finalString =
-            "\n" + addToRequest.getText() + "\n Added by " + userType + " " + userID;
-        preparedStatement.setString(4, finalString);
-        preparedStatement.execute();
-        JOptionPane.showMessageDialog(null, "Message added");
-        sql = "UPDATE Request SET Status = 'In Progress' WHERE RID = ?";
-        preparedStatement = connection.prepareStatement(sql);
-        temp = Integer.toString(requestNumber);
-        preparedStatement.setString(1, temp);
-        preparedStatement.execute();
-        currentRequest.append("\n");
-        currentRequest.append(timestamp);
-        currentRequest.append("\n");
-        currentRequest.append(finalString);
-        addToRequest.setText("");
-        sql = "UPDATE Message SET DUsername = ? WHERE RID = ?";
-        preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, userID);
-        preparedStatement.setString(2, temp);
-        preparedStatement.execute();
-      } catch (SQLException | HeadlessException e) {
-        JOptionPane.showMessageDialog(null, e);
-      } finally {
-        try {
-          resultSet.close();
-          preparedStatement.close();
-        } catch (SQLException e) {
-          JOptionPane.showMessageDialog(null, e);
-        }
-      }
+      preparedStatement = connection.prepareStatement(sql);
+      String temp = Integer.toString(requestNumber);
+      preparedStatement.setString(1, temp);
+      preparedStatement.setString(2, userID);
+      Date date = new Date();
+      String timestamp = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(date);
+      preparedStatement.setString(3, timestamp);
+      String finalString = "\n" + addToRequest.getText() + "\n Added by " + userType + " " + userID;
+      preparedStatement.setString(4, finalString);
+      preparedStatement.execute();
+      JOptionPane.showMessageDialog(null, "Message added");
+      sql = "UPDATE Request SET Status = 'In Progress' WHERE RID = ?";
+      preparedStatement = connection.prepareStatement(sql);
+      temp = Integer.toString(requestNumber);
+      preparedStatement.setString(1, temp);
+      preparedStatement.execute();
+      currentRequest.append("\n");
+      currentRequest.append(timestamp);
+      currentRequest.append("\n");
+      currentRequest.append(finalString);
+      addToRequest.setText("");
+      sql = "UPDATE Message SET DUsername = ? WHERE RID = ?";
+      preparedStatement = connection.prepareStatement(sql);
+      preparedStatement.setString(1, userID);
+      preparedStatement.setString(2, temp);
+      preparedStatement.execute();
+      preparedStatement.close();
+      connection.close();
     }
   }
 
-  private void closeButtonActionPerformed(ActionEvent evt) throws Exception {
-    // TODO add your handling code here:
+  public void closeButtonActionPerformed() throws Exception {
     int pane =
         JOptionPane.showConfirmDialog(
             null,
@@ -298,24 +298,12 @@ public class RequestConversation extends JFrame {
             JOptionPane.YES_NO_OPTION);
     if (pane == 0) {
       String sql = "UPDATE Request SET Status = 'Closed' WHERE RID = ?";
-      try {
-        preparedStatement = connection.prepareStatement(sql);
-        String temp = Integer.toString(requestNumber);
-        preparedStatement.setString(1, temp);
-        preparedStatement.execute();
-        JOptionPane.showMessageDialog(null, "Request has been closed.");
-      } catch (SQLException | HeadlessException e) {
-        JOptionPane.showMessageDialog(null, e);
-      } finally {
-        try {
-          resultSet.close();
-          preparedStatement.close();
-        } catch (SQLException e) {
-          JOptionPane.showMessageDialog(null, e);
-        }
-      }
+      preparedStatement = connection.prepareStatement(sql);
+      String temp = Integer.toString(requestNumber);
+      preparedStatement.setString(1, temp);
+      preparedStatement.execute();
+      JOptionPane.showMessageDialog(null, "Request has been closed.");
 
-      NewJFrame jFrame = new NewJFrame();
       if ("Doctor".equals(userType)) {
         DoctorView doctorView = new DoctorView(userID);
         doctorView.setVisible(true);
@@ -324,15 +312,13 @@ public class RequestConversation extends JFrame {
         patientView.setVisible(true);
       }
       dispose();
+      preparedStatement.close();
+      connection.close();
     }
   }
 
-  private void backButtonActionPerformed() throws Exception {
+  public void backButtonActionPerformed() throws Exception {
 
-    if (resultSet == null && preparedStatement == null) {
-      resultSet.close();
-      preparedStatement.close();
-    }
     if ("Doctor".equals(userType)) {
       DoctorView doctorView = new DoctorView(userID);
       doctorView.setVisible(true);

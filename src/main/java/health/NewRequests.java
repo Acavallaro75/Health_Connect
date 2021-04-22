@@ -225,6 +225,9 @@ public class NewRequests extends JFrame {
       PatientView patientView = new PatientView(userID);
       patientView.setVisible(true);
       dispose();
+        preparedStatement.close();
+        connection.close();
+
     }
   }
 

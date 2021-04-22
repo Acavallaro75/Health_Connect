@@ -74,6 +74,8 @@ public class RequestConversation extends JFrame {
       closeButton.setEnabled(false);
       addButton.setEnabled(false);
     }
+    resultSet.close();
+    preparedStatement.close();
   }
 
   /**
@@ -119,6 +121,15 @@ public class RequestConversation extends JFrame {
         evt -> {
           try {
             backButtonActionPerformed();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        });
+
+    closeButton.addActionListener(
+        evt -> {
+          try {
+            closeButtonActionPerformed();
           } catch (Exception e) {
             e.printStackTrace();
           }

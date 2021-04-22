@@ -347,6 +347,8 @@ public final class DoctorView extends JFrame {
       JOptionPane.showMessageDialog(null, "No new requests created.");
       test = false;
     }
+    resultSet.close();
+    preparedStatement.close();
   }
 
   public void inProgressButtonActionPerformed() throws SQLException {
@@ -406,6 +408,8 @@ public final class DoctorView extends JFrame {
       dispose();
       requestConversation.setVisible(true);
     }
+    resultSet.close();
+    preparedStatement.close();
   }
 
   public void closeRequestButtonActionPerformed() throws SQLException {
